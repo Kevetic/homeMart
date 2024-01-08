@@ -1,14 +1,36 @@
 import React from "react";
+import { prisma } from "@/lib/db/prisma";
+import { redirect } from "next/navigation";
+import FormSubmitButton from "../components/FormSubmitButton";
 
 export const metadata = {
   title: "Add Product",
 };
 
+async function addProduct(formData: FormData) {
+  "use server";
+
+  const name = formData.get("name")?.toString();
+  const description = formData.get("description")?.toString();
+  const imgUrl = formData.get("imgUrl")?.toString();
+  const price = Number(formData.get("price") || 0);
+
+  if (!name || !description || !imgUrl || !price) {
+    throw Error("Missing Required Field");
+  }
+
+  await prisma.product.create({
+    data: { name, description, imgUrl, price },
+  });
+
+  redirect("/");
+}
+
 function AddProductPage() {
   return (
     <div>
       <h1 className="mb-3 text-lg font-bold">Add Product</h1>
-      <form>
+      <form action={addProduct}>
         <input
           required
           name="name"
@@ -35,9 +57,7 @@ function AddProductPage() {
           type="number"
           className="input input-bordered mb-3 w-full"
         />
-        <button type="submit" className="btn btn-primary btn-block">
-          Add Product
-        </button>
+        <FormSubmitButton className="btn-block">Add Product</FormSubmitButton>
       </form>
     </div>
   );
