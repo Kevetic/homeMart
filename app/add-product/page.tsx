@@ -31,7 +31,7 @@ async function addProduct(formData: FormData) {
     data: { name, description, imgUrl, price },
   });
 
-  redirect("/");
+  // redirect("/");
 }
 
 async function AddProductPage() {
